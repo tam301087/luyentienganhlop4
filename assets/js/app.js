@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeApp() {
     console.log('🚀 Initializing English Learning Land v2.0...');
+    console.log('Current appState:', appState);
+    console.log('LEVELS available:', typeof LEVELS, LEVELS ? LEVELS.length : 'undefined');
     
     // Setup event listeners first
     setupMenuListeners();
@@ -55,6 +57,7 @@ function initializeApp() {
     
     // Load saved progress (this may change currentLevel and score)
     loadProgress();
+    console.log('After loadProgress, appState:', appState);
     
     // Initialize level selector (now with correct score)
     initializeLevelSelector();
