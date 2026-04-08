@@ -244,7 +244,12 @@ function renderTopicButtons() {
             body_parts: 'Bộ Phận Cơ Thể 🫀',
             clothes: 'Quần Áo 👕',
             food: 'Đồ Ăn 🍕',
-            school: 'Trường Học 🏫'
+            school: 'Trường Học 🏫',
+            weather: 'Thời Tiết 🌤️',
+            transportation: 'Phương Tiện 🚗',
+            sports: 'Thể Thao ⚽',
+            hobbies: 'Sở Thích 🎨',
+            emotions: 'Cảm Xúc 😊'
         };
 
         button.textContent = topicNames[topic] || topic;

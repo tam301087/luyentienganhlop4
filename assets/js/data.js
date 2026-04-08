@@ -231,6 +231,116 @@ const vocabularyMaster = {
         { english: "Library", vietnamese: "Thư viện", emoji: "📖" },
         { english: "Homework", vietnamese: "Bài tập về nhà", emoji: "📝" },
     ],
+    weather: [
+        { english: "Sunny", vietnamese: "Nắng", emoji: "☀️" },
+        { english: "Rainy", vietnamese: "Mưa", emoji: "🌧️" },
+        { english: "Cloudy", vietnamese: "Nhiều mây", emoji: "☁️" },
+        { english: "Windy", vietnamese: "Gió", emoji: "💨" },
+        { english: "Snowy", vietnamese: "Tuyết", emoji: "❄️" },
+        { english: "Hot", vietnamese: "Nóng", emoji: "🔥" },
+        { english: "Cold", vietnamese: "Lạnh", emoji: "🧊" },
+        { english: "Storm", vietnamese: "Bão", emoji: "⛈️" },
+        { english: "Rainbow", vietnamese: "Cầu vồng", emoji: "🌈" },
+        { english: "Thunder", vietnamese: "Sấm", emoji: "⚡" },
+        { english: "Lightning", vietnamese: "Chớp", emoji: "⚡" },
+        { english: "Fog", vietnamese: "Sương mù", emoji: "🌫️" },
+        { english: "Hurricane", vietnamese: "Bão tố", emoji: "🌀" },
+        { english: "Drought", vietnamese: "Hạn hán", emoji: "🏜️" },
+        { english: "Flood", vietnamese: "Lũ lụt", emoji: "🌊" },
+        { english: "Temperature", vietnamese: "Nhiệt độ", emoji: "🌡️" },
+        { english: "Humidity", vietnamese: "Độ ẩm", emoji: "💧" },
+        { english: "Forecast", vietnamese: "Dự báo", emoji: "📺" },
+        { english: "Season", vietnamese: "Mùa", emoji: "🍂" },
+        { english: "Climate", vietnamese: "Khí hậu", emoji: "🌍" },
+    ],
+    transportation: [
+        { english: "Car", vietnamese: "Ô tô", emoji: "🚗" },
+        { english: "Bus", vietnamese: "Xe buýt", emoji: "🚌" },
+        { english: "Train", vietnamese: "Tàu hỏa", emoji: "🚂" },
+        { english: "Plane", vietnamese: "Máy bay", emoji: "✈️" },
+        { english: "Bike", vietnamese: "Xe đạp", emoji: "🚲" },
+        { english: "Motorcycle", vietnamese: "Xe máy", emoji: "🏍️" },
+        { english: "Boat", vietnamese: "Thuyền", emoji: "⛵" },
+        { english: "Ship", vietnamese: "Tàu thủy", emoji: "🚢" },
+        { english: "Truck", vietnamese: "Xe tải", emoji: "🚚" },
+        { english: "Taxi", vietnamese: "Taxi", emoji: "🚕" },
+        { english: "Subway", vietnamese: "Tàu điện ngầm", emoji: "🚇" },
+        { english: "Helicopter", vietnamese: "Trực thăng", emoji: "🚁" },
+        { english: "Bicycle", vietnamese: "Xe đạp", emoji: "🚴" },
+        { english: "Scooter", vietnamese: "Xe tay ga", emoji: "🛵" },
+        { english: "Rickshaw", vietnamese: "Xe kéo", emoji: "人力车" },
+        { english: "Horse", vietnamese: "Ngựa", emoji: "🐎" },
+        { english: "Camel", vietnamese: "Lạc đà", emoji: "🐪" },
+        { english: "Elephant", vietnamese: "Voi", emoji: "🐘" },
+        { english: "Road", vietnamese: "Đường", emoji: "🛣️" },
+        { english: "Highway", vietnamese: "Đại lộ", emoji: "🛣️" },
+    ],
+    sports: [
+        { english: "Football", vietnamese: "Bóng đá", emoji: "⚽" },
+        { english: "Basketball", vietnamese: "Bóng rổ", emoji: "🏀" },
+        { english: "Tennis", vietnamese: "Quần vợt", emoji: "🎾" },
+        { english: "Swimming", vietnamese: "Bơi lội", emoji: "🏊" },
+        { english: "Running", vietnamese: "Chạy", emoji: "🏃" },
+        { english: "Cycling", vietnamese: "Đạp xe", emoji: "🚴" },
+        { english: "Baseball", vietnamese: "Bóng chày", emoji: "⚾" },
+        { english: "Volleyball", vietnamese: "Bóng chuyền", emoji: "🏐" },
+        { english: "Golf", vietnamese: "Golf", emoji: "⛳" },
+        { english: "Soccer", vietnamese: "Bóng đá", emoji: "⚽" },
+        { english: "Hockey", vietnamese: "Khúc côn cầu", emoji: "🏒" },
+        { english: "Boxing", vietnamese: "Quyền anh", emoji: "🥊" },
+        { english: "Wrestling", vietnamese: "Đấu vật", emoji: "🤼" },
+        { english: "Judo", vietnamese: "Judo", emoji: "🥋" },
+        { english: "Karate", vietnamese: "Karate", emoji: "🥋" },
+        { english: "Badminton", vietnamese: "Cầu lông", emoji: "🏸" },
+        { english: "Table tennis", vietnamese: "Bóng bàn", emoji: "🏓" },
+        { english: "Skiing", vietnamese: "Trượt tuyết", emoji: "🎿" },
+        { english: "Skating", vietnamese: "Trượt băng", emoji: "⛸️" },
+        { english: "Diving", vietnamese: "Lặn", emoji: "🤿" },
+    ],
+    hobbies: [
+        { english: "Reading", vietnamese: "Đọc sách", emoji: "📖" },
+        { english: "Writing", vietnamese: "Viết", emoji: "✍️" },
+        { english: "Drawing", vietnamese: "Vẽ", emoji: "🎨" },
+        { english: "Painting", vietnamese: "Họa", emoji: "🖌️" },
+        { english: "Music", vietnamese: "Âm nhạc", emoji: "🎵" },
+        { english: "Singing", vietnamese: "Hát", emoji: "🎤" },
+        { english: "Dancing", vietnamese: "Nhảy múa", emoji: "💃" },
+        { english: "Cooking", vietnamese: "Nấu ăn", emoji: "👨‍🍳" },
+        { english: "Gardening", vietnamese: "Làm vườn", emoji: "🌱" },
+        { english: "Photography", vietnamese: "Chụp ảnh", emoji: "📷" },
+        { english: "Fishing", vietnamese: "Câu cá", emoji: "🎣" },
+        { english: "Hiking", vietnamese: "Đi bộ đường mòn", emoji: "🥾" },
+        { english: "Camping", vietnamese: "Cắm trại", emoji: "⛺" },
+        { english: "Traveling", vietnamese: "Du lịch", emoji: "✈️" },
+        { english: "Shopping", vietnamese: "Mua sắm", emoji: "🛍️" },
+        { english: "Watching TV", vietnamese: "Xem TV", emoji: "📺" },
+        { english: "Playing games", vietnamese: "Chơi game", emoji: "🎮" },
+        { english: "Collecting", vietnamese: "Sưu tầm", emoji: "🃏" },
+        { english: "Knitting", vietnamese: "Đan", emoji: "🧶" },
+        { english: "Sewing", vietnamese: "May vá", emoji: "🪡" },
+    ],
+    emotions: [
+        { english: "Happy", vietnamese: "Vui vẻ", emoji: "😊" },
+        { english: "Sad", vietnamese: "Buồn", emoji: "😢" },
+        { english: "Angry", vietnamese: "Giận dữ", emoji: "😠" },
+        { english: "Surprised", vietnamese: "Bất ngờ", emoji: "😮" },
+        { english: "Scared", vietnamese: "Sợ hãi", emoji: "😨" },
+        { english: "Excited", vietnamese: "Hào hứng", emoji: "🤩" },
+        { english: "Tired", vietnamese: "Mệt mỏi", emoji: "😴" },
+        { english: "Bored", vietnamese: "Nhàm chán", emoji: "😑" },
+        { english: "Confused", vietnamese: "Bối rối", emoji: "😕" },
+        { english: "Proud", vietnamese: "Tự hào", emoji: "😌" },
+        { english: "Jealous", vietnamese: "Ghen tị", emoji: "😤" },
+        { english: "Grateful", vietnamese: "Biết ơn", emoji: "🙏" },
+        { english: "Hopeful", vietnamese: "Hy vọng", emoji: "🤞" },
+        { english: "Disappointed", vietnamese: "Thất vọng", emoji: "😞" },
+        { english: "Worried", vietnamese: "Lo lắng", emoji: "😟" },
+        { english: "Calm", vietnamese: "Bình tĩnh", emoji: "😌" },
+        { english: "Nervous", vietnamese: "Bồn chồn", emoji: "😬" },
+        { english: "Shy", vietnamese: "Nhút nhát", emoji: "😊" },
+        { english: "Brave", vietnamese: "Dũng cảm", emoji: "🦁" },
+        { english: "Kind", vietnamese: "Tử tế", emoji: "🤗" },
+    ],
 };
 
 const speakingSentences = [
@@ -273,8 +383,15 @@ function getVocabularyCountForLevel(level) {
 function getAvailableTopicsForLevel(level) {
     const allTopics = Object.keys(vocabularyMaster);
     const topicsPerLevel = 5;
-    const startIndex = Math.floor((level - 1) / 4) * topicsPerLevel;
-    return allTopics.slice(startIndex, startIndex + topicsPerLevel);
+    const startIndex = ((level - 1) % Math.ceil(allTopics.length / topicsPerLevel)) * topicsPerLevel;
+    const topics = allTopics.slice(startIndex, startIndex + topicsPerLevel);
+    
+    // If not enough topics, add from beginning
+    if (topics.length < topicsPerLevel) {
+        topics.push(...allTopics.slice(0, topicsPerLevel - topics.length));
+    }
+    
+    return topics;
 }
 
 function getVocabularyForTopic(topic, level = appState?.currentLevel || 1) {
