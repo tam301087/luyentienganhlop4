@@ -19,6 +19,13 @@ const appState = {
     memoryGameCards: [],
     memoryGameFlipped: [],
     memoryGameMatched: new Set(),
+    // User state
+    currentUser: null,
+    users: JSON.parse(localStorage.getItem('englishLearningUsers') || '{}'),
+    settings: {
+        backgroundImage: '',
+        language: 'vi'
+    }
 };
 
 // Initialize App
@@ -35,6 +42,9 @@ function initializeApp() {
     // Initialize level selector
     initializeLevelSelector();
     
+    // Render topic buttons for current level
+    renderTopicButtons();
+    
     // Load vocabulary for current level
     updateVocabulary('animals', appState.currentLevel);
     
@@ -48,6 +58,11 @@ function initializeApp() {
     setupMenuListeners();
     setupVocabularyListeners();
     setupTopicListeners();
+    setupUserListeners();
+    
+    // Update UI
+    updateUserUI();
+}
     setupListeningListeners();
     setupReadingListeners();
     setupWritingListeners();
@@ -84,28 +99,52 @@ function initializeLevelSelector() {
     
     LEVELS.forEach(level => {
         const isSelected = level.id === appState.currentLevel;
+        const isUnlocked = isLevelUnlocked(level.id, appState.score);
         const card = document.createElement('div');
-        card.className = `level-card${isSelected ? ' selected-level' : ''}`;
+        card.className = `level-card${isSelected ? ' selected-level' : ''}${!isUnlocked ? ' locked' : ''}`;
         card.style.background = level.color;
-        card.style.cursor = 'pointer';
+        card.style.cursor = isUnlocked ? 'pointer' : 'not-allowed';
+        card.style.opacity = isUnlocked ? '1' : '0.6';
         
+        const lockIcon = isUnlocked ? '' : '🔒 ';
         const html = `
-            <div class="level-emoji">${level.emoji}</div>
+            <div class="level-emoji">${lockIcon}${level.emoji}</div>
             <div class="level-name">${level.name}</div>
             <div class="level-desc">${level.description}</div>
+            ${!isUnlocked ? `<div class="level-requirement">Cần ${level.required_score} điểm</div>` : ''}
         `;
         
         card.innerHTML = html;
-        card.addEventListener('click', () => selectLevel(level.id));
+        if (isUnlocked) {
+            card.addEventListener('click', () => selectLevel(level.id));
+        }
         levelGrid.appendChild(card);
     });
 }
 
 function selectLevel(levelId) {
+    // Check if level is unlocked
+    if (!isLevelUnlocked(levelId, appState.score)) {
+        const requiredScore = getLevelInfo(levelId).required_score;
+        alert(`🔒 Level này cần ${requiredScore} điểm để mở khóa! Bạn hiện có ${appState.score} điểm.`);
+        return;
+    }
+
     appState.currentLevel = levelId;
     appState.currentVocabIndex = 0;
+    
+    // Render topic buttons for new level
+    renderTopicButtons();
+    
+    // Set default topic if current topic not available
+    const availableTopics = getAvailableTopicsForLevel(levelId);
+    if (!availableTopics.includes(appState.currentTopic)) {
+        appState.currentTopic = availableTopics[0];
+    }
+    
     updateVocabulary(appState.currentTopic, levelId);
     renderVocabularyCards();
+    renderSpeakingPractice();
     initializeLevelSelector();
     
     const levelName = getLevelInfo(levelId).name;
@@ -175,14 +214,40 @@ function setupVocabularyListeners() {
     }
 }
 
-function setupTopicListeners() {
-    const topicButtons = document.querySelectorAll('.topic-btn');
-    topicButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const topic = btn.dataset.topic;
-            changeTopic(topic);
-        });
+function renderTopicButtons() {
+    const topicSelector = document.querySelector('.topic-selector');
+    if (!topicSelector) return;
+
+    const availableTopics = getAvailableTopicsForLevel(appState.currentLevel);
+    topicSelector.innerHTML = '';
+
+    availableTopics.forEach(topic => {
+        const button = document.createElement('button');
+        button.className = 'topic-btn';
+        button.dataset.topic = topic;
+        if (topic === appState.currentTopic) {
+            button.classList.add('active');
+        }
+
+        // Translate topic names
+        const topicNames = {
+            animals: 'Động Vật 🦁',
+            colors: 'Màu Sắc 🎨',
+            fruits: 'Trái Cây 🍎',
+            numbers: 'Số Đếm 🔢',
+            family: 'Gia Đình 👨‍👩‍👧',
+            body_parts: 'Bộ Phận Cơ Thể 🫀',
+            clothes: 'Quần Áo 👕',
+            food: 'Đồ Ăn 🍕',
+            school: 'Trường Học 🏫'
+        };
+
+        button.textContent = topicNames[topic] || topic;
+        topicSelector.appendChild(button);
     });
+
+    // Re-setup listeners
+    setupTopicListeners();
 }
 
 function changeTopic(topic) {
@@ -236,12 +301,30 @@ function renderSpeakingPractice() {
     const sentences = getSpeakingSentencesForLevel(appState.currentLevel);
     speakingList.innerHTML = '';
 
-    sentences.forEach(sentence => {
+    sentences.forEach((sentence, index) => {
         const item = document.createElement('div');
         item.className = 'speaking-sentence';
-        item.textContent = sentence;
+        item.innerHTML = `
+            <span>${sentence}</span>
+            <button class="btn btn-small speak-btn" data-sentence="${sentence}">🔊 Phát âm</button>
+        `;
         speakingList.appendChild(item);
     });
+
+    // Add event listeners for speak buttons
+    document.querySelectorAll('.speak-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const sentence = e.target.dataset.sentence;
+            speakSentence(sentence);
+        });
+    });
+}
+
+function speakSentence(sentence) {
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8; // Slower for learning
+    speechSynthesis.speak(utterance);
 }
 
 function playCurrentVocabAudio() {
@@ -697,10 +780,21 @@ function updateScoreDisplay() {
     }
     
     if (progressDisplay) {
-        const percentage = appState.totalExercises > 0 
-            ? Math.round((appState.completedExercises / appState.totalExercises) * 100)
-            : 0;
-        progressDisplay.textContent = percentage + '%';
+        // Calculate progress towards next level
+        const currentLevel = getLevelInfo(appState.currentLevel);
+        const nextLevel = getLevelInfo(appState.currentLevel + 1);
+        
+        if (nextLevel) {
+            const currentRequired = currentLevel.required_score;
+            const nextRequired = nextLevel.required_score;
+            const progressInLevel = appState.score - currentRequired;
+            const levelRange = nextRequired - currentRequired;
+            const percentage = levelRange > 0 ? Math.min(Math.round((progressInLevel / levelRange) * 100), 100) : 100;
+            progressDisplay.textContent = percentage + '%';
+        } else {
+            // Max level reached
+            progressDisplay.textContent = '100%';
+        }
     }
 }
 
@@ -709,14 +803,18 @@ function updateScoreDisplay() {
 // ============================================
 
 function saveProgress() {
-    const progress = {
-        score: appState.score,
-        completedExercises: appState.completedExercises,
-        totalExercises: appState.totalExercises,
-        currentLevel: appState.currentLevel,
-        timestamp: new Date().toISOString(),
-    };
-    localStorage.setItem('englishLearningProgress', JSON.stringify(progress));
+    if (appState.currentUser) {
+        saveUserProgress();
+    } else {
+        const progress = {
+            score: appState.score,
+            completedExercises: appState.completedExercises,
+            totalExercises: appState.totalExercises,
+            currentLevel: appState.currentLevel,
+            timestamp: new Date().toISOString(),
+        };
+        localStorage.setItem('englishLearningProgress', JSON.stringify(progress));
+    }
 }
 
 function loadProgress() {
@@ -732,6 +830,194 @@ function loadProgress() {
         }
         updateScoreDisplay();
     }
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+function setupUserListeners() {
+    const loginBtn = document.getElementById('loginBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginModal = document.getElementById('loginModal');
+    const settingsModal = document.getElementById('settingsModal');
+    const loginClose = document.getElementById('loginClose');
+    const settingsClose = document.getElementById('settingsClose');
+    const loginForm = document.getElementById('loginForm');
+    const settingsForm = document.getElementById('settingsForm');
+    const registerBtn = document.getElementById('registerBtn');
+
+    // Load user settings
+    loadUserSettings();
+
+    loginBtn.addEventListener('click', () => {
+        if (appState.currentUser) {
+            // Show user menu or logout
+            logout();
+        } else {
+            loginModal.style.display = 'block';
+        }
+    });
+
+    settingsBtn.addEventListener('click', () => {
+        if (!appState.currentUser) {
+            alert('Vui lòng đăng nhập trước!');
+            return;
+        }
+        loadSettingsForm();
+        settingsModal.style.display = 'block';
+    });
+
+    logoutBtn.addEventListener('click', logout);
+
+    loginClose.addEventListener('click', () => loginModal.style.display = 'none');
+    settingsClose.addEventListener('click', () => settingsModal.style.display = 'none');
+
+    window.addEventListener('click', (e) => {
+        if (e.target === loginModal) loginModal.style.display = 'none';
+        if (e.target === settingsModal) settingsModal.style.display = 'none';
+    });
+
+    loginForm.addEventListener('submit', handleLogin);
+    settingsForm.addEventListener('submit', handleSettingsUpdate);
+    registerBtn.addEventListener('click', handleRegister);
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (appState.users[username] && appState.users[username].password === password) {
+        appState.currentUser = username;
+        loadUserProgress();
+        updateUserUI();
+        document.getElementById('loginModal').style.display = 'none';
+        alert(`Chào mừng ${username}!`);
+    } else {
+        alert('Tên đăng nhập hoặc mật khẩu không đúng!');
+    }
+}
+
+function handleRegister() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (!username || !password) {
+        alert('Vui lòng nhập tên đăng nhập và mật khẩu!');
+        return;
+    }
+
+    if (appState.users[username]) {
+        alert('Tên đăng nhập đã tồn tại!');
+        return;
+    }
+
+    appState.users[username] = {
+        password: password,
+        displayName: username,
+        score: 0,
+        currentLevel: 1,
+        settings: { backgroundImage: '', language: 'vi' }
+    };
+
+    localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
+    alert('Đăng ký thành công! Vui lòng đăng nhập.');
+}
+
+function handleSettingsUpdate(e) {
+    e.preventDefault();
+    if (!appState.currentUser) return;
+
+    const newUsername = document.getElementById('newUsername').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const backgroundImage = document.getElementById('backgroundImage').value;
+    const language = document.getElementById('language').value;
+
+    if (newPassword && newPassword !== confirmPassword) {
+        alert('Mật khẩu xác nhận không khớp!');
+        return;
+    }
+
+    const user = appState.users[appState.currentUser];
+    if (newUsername) user.displayName = newUsername;
+    if (newPassword) user.password = newPassword;
+    user.settings.backgroundImage = backgroundImage;
+    user.settings.language = language;
+
+    localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
+    applyUserSettings();
+    document.getElementById('settingsModal').style.display = 'none';
+    alert('Cài đặt đã được cập nhật!');
+}
+
+function loadSettingsForm() {
+    if (!appState.currentUser) return;
+    const user = appState.users[appState.currentUser];
+    document.getElementById('newUsername').value = user.displayName || '';
+    document.getElementById('backgroundImage').value = user.settings.backgroundImage || '';
+    document.getElementById('language').value = user.settings.language || 'vi';
+}
+
+function loadUserProgress() {
+    if (!appState.currentUser) return;
+    const user = appState.users[appState.currentUser];
+    appState.score = user.score || 0;
+    appState.currentLevel = user.currentLevel || 1;
+    appState.settings = user.settings || { backgroundImage: '', language: 'vi' };
+    applyUserSettings();
+    updateScoreDisplay();
+}
+
+function saveUserProgress() {
+    if (!appState.currentUser) return;
+    const user = appState.users[appState.currentUser];
+    user.score = appState.score;
+    user.currentLevel = appState.currentLevel;
+    localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
+}
+
+function loadUserSettings() {
+    const savedSettings = localStorage.getItem('englishLearningSettings');
+    if (savedSettings) {
+        appState.settings = JSON.parse(savedSettings);
+        applyUserSettings();
+    }
+}
+
+function applyUserSettings() {
+    if (appState.settings.backgroundImage) {
+        document.body.style.backgroundImage = `url(${appState.settings.backgroundImage})`;
+        document.body.style.backgroundSize = 'cover';
+    }
+    // Language settings can be implemented later
+}
+
+function updateUserUI() {
+    const loginBtn = document.getElementById('loginBtn');
+    const userInfo = document.getElementById('userInfo');
+    const userName = document.getElementById('userName');
+
+    if (appState.currentUser) {
+        loginBtn.style.display = 'none';
+        userInfo.style.display = 'flex';
+        userName.textContent = appState.users[appState.currentUser].displayName || appState.currentUser;
+    } else {
+        loginBtn.style.display = 'inline-block';
+        userInfo.style.display = 'none';
+    }
+}
+
+function logout() {
+    saveUserProgress();
+    appState.currentUser = null;
+    appState.score = 0;
+    appState.currentLevel = 1;
+    updateUserUI();
+    updateScoreDisplay();
+    alert('Đã đăng xuất!');
 }
 
 console.log('✅ App logic loaded successfully!');
