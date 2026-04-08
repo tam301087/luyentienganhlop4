@@ -103,15 +103,29 @@ function setupMenuListeners() {
 
 function initializeLevelSelector() {
     console.log('Initializing level selector...');
+    
+    // First, ensure the level selector section is visible
+    const levelSelector = document.getElementById('levelSelector');
+    if (levelSelector) {
+        levelSelector.style.display = 'block';
+        console.log('Level selector section is visible');
+    } else {
+        console.error('levelSelector section not found!');
+    }
+    
     const levelGrid = document.getElementById('levelGrid');
     console.log('levelGrid element:', levelGrid);
     if (!levelGrid) {
-        console.error('levelGrid not found! DOM may not be ready.');
-        // Try again after a short delay
-        setTimeout(() => {
-            console.log('Retrying initializeLevelSelector...');
-            initializeLevelSelector();
-        }, 100);
+        console.error('levelGrid not found! Creating it manually...');
+        // Try to create it manually
+        const selector = document.getElementById('levelSelector');
+        if (selector) {
+            const grid = document.createElement('div');
+            grid.className = 'level-grid';
+            grid.id = 'levelGrid';
+            selector.appendChild(grid);
+            console.log('Created levelGrid manually');
+        }
         return;
     }
     
@@ -121,6 +135,8 @@ function initializeLevelSelector() {
     
     if (!LEVELS || LEVELS.length === 0) {
         console.error('LEVELS array is empty or undefined!');
+        // Create a simple test level
+        levelGrid.innerHTML = '<div class="level-card" style="background: red; padding: 20px;">Test Level - LEVELS not loaded</div>';
         return;
     }
     
