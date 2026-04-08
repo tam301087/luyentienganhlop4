@@ -36,9 +36,13 @@ const appState = {
 };
 
 // Initialize App
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeApp();
+    });
+} else {
     initializeApp();
-});
+}
 
 function initializeApp() {
     console.log('🚀 Initializing English Learning Land v2.0...');
