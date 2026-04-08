@@ -106,15 +106,26 @@ function initializeLevelSelector() {
     const levelGrid = document.getElementById('levelGrid');
     console.log('levelGrid element:', levelGrid);
     if (!levelGrid) {
-        console.error('levelGrid not found!');
+        console.error('levelGrid not found! DOM may not be ready.');
+        // Try again after a short delay
+        setTimeout(() => {
+            console.log('Retrying initializeLevelSelector...');
+            initializeLevelSelector();
+        }, 100);
         return;
     }
     
     levelGrid.innerHTML = '';
     console.log('LEVELS array:', LEVELS);
+    console.log('LEVELS length:', LEVELS ? LEVELS.length : 'undefined');
+    
+    if (!LEVELS || LEVELS.length === 0) {
+        console.error('LEVELS array is empty or undefined!');
+        return;
+    }
     
     LEVELS.forEach(level => {
-        console.log('Creating level card for:', level.id);
+        console.log('Creating level card for:', level.id, level.name);
         const isSelected = level.id === appState.currentLevel;
         const isUnlocked = isLevelUnlocked(level.id, appState.score);
         const card = document.createElement('div');
