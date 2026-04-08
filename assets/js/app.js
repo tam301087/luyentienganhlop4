@@ -36,25 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeApp() {
     console.log('🚀 Initializing English Learning Land v2.0...');
     
-    // Load saved progress
-    loadProgress();
-    
-    // Initialize level selector
-    initializeLevelSelector();
-    
-    // Render topic buttons for current level
-    renderTopicButtons();
-    
-    // Load vocabulary for current level
-    updateVocabulary('animals', appState.currentLevel);
-    
-    // Load other exercises
-    appState.currentListeningExercise = getRandomListeningExercise();
-    appState.currentReadingExercise = getRandomReadingExercise();
-    appState.currentWritingExercise = getRandomWritingExercise();
-    appState.memoryGameCards = getMemoryGameCards();
-    
-    // Setup event listeners
+    // Setup event listeners first
     setupMenuListeners();
     setupVocabularyListeners();
     setupTopicListeners();
@@ -64,11 +46,30 @@ function initializeApp() {
     setupWritingListeners();
     setupGameListeners();
     
+    // Load saved progress (this may change currentLevel and score)
+    loadProgress();
+    
+    // Initialize level selector (now with correct score)
+    initializeLevelSelector();
+    
+    // Render topic buttons for current level
+    renderTopicButtons();
+    
+    // Load vocabulary for current level
+    updateVocabulary(appState.currentTopic, appState.currentLevel);
+    
+    // Load other exercises
+    appState.currentListeningExercise = getRandomListeningExercise();
+    appState.currentReadingExercise = getRandomReadingExercise();
+    appState.currentWritingExercise = getRandomWritingExercise();
+    appState.memoryGameCards = getMemoryGameCards();
+    
     // Update UI
     updateUserUI();
     
     // Initial render
     renderVocabularyCards();
+    renderSpeakingPractice();
     updateScoreDisplay();
 }
 
@@ -122,13 +123,16 @@ function initializeLevelSelector() {
 }
 
 function selectLevel(levelId) {
+    console.log('Selecting level:', levelId, 'Current score:', appState.score);
     // Check if level is unlocked
     if (!isLevelUnlocked(levelId, appState.score)) {
         const requiredScore = getLevelInfo(levelId).required_score;
+        console.log('Level locked, required:', requiredScore);
         alert(`🔒 Level này cần ${requiredScore} điểm để mở khóa! Bạn hiện có ${appState.score} điểm.`);
         return;
     }
 
+    console.log('Level unlocked, proceeding');
     appState.currentLevel = levelId;
     appState.currentVocabIndex = 0;
     
@@ -214,10 +218,12 @@ function setupVocabularyListeners() {
 }
 
 function renderTopicButtons() {
+    console.log('Rendering topic buttons for level:', appState.currentLevel);
     const topicSelector = document.querySelector('.topic-selector');
     if (!topicSelector) return;
 
     const availableTopics = getAvailableTopicsForLevel(appState.currentLevel);
+    console.log('Available topics:', availableTopics);
     topicSelector.innerHTML = '';
 
     availableTopics.forEach(topic => {
@@ -851,12 +857,7 @@ function setupUserListeners() {
     loadUserSettings();
 
     loginBtn.addEventListener('click', () => {
-        if (appState.currentUser) {
-            // Show user menu or logout
-            logout();
-        } else {
-            loginModal.style.display = 'block';
-        }
+        loginModal.style.display = 'block';
     });
 
     settingsBtn.addEventListener('click', () => {
@@ -885,16 +886,20 @@ function setupUserListeners() {
 
 function handleLogin(e) {
     e.preventDefault();
+    console.log('Login attempt');
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    console.log('Username:', username, 'Password:', password);
 
     if (appState.users[username] && appState.users[username].password === password) {
+        console.log('Login successful');
         appState.currentUser = username;
         loadUserProgress();
         updateUserUI();
         document.getElementById('loginModal').style.display = 'none';
         alert(`Chào mừng ${username}!`);
     } else {
+        console.log('Login failed');
         alert('Tên đăng nhập hoặc mật khẩu không đúng!');
     }
 }
