@@ -6,6 +6,7 @@
 const appState = {
     currentSection: 'vocabulary',
     currentTopic: 'animals',
+    currentLevel: 2,
     currentVocabIndex: 0,
     currentListeningExercise: null,
     currentReadingExercise: null,
@@ -26,10 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeApp() {
-    console.log('🚀 Initializing English Learning Land...');
+    console.log('🚀 Initializing English Learning Land v2.0...');
     
-    // Load vocabulary
-    updateVocabulary('animals');
+    // Load saved progress
+    loadProgress();
+    
+    // Initialize level selector
+    initializeLevelSelector();
+    
+    // Load vocabulary for current level
+    updateVocabulary('animals', appState.currentLevel);
     
     // Load other exercises
     appState.currentListeningExercise = getRandomListeningExercise();
@@ -45,9 +52,6 @@ function initializeApp() {
     setupReadingListeners();
     setupWritingListeners();
     setupGameListeners();
-    
-    // Load saved progress
-    loadProgress();
     
     // Initial render
     renderVocabularyCards();
@@ -68,7 +72,57 @@ function setupMenuListeners() {
     });
 }
 
-function switchSection(sectionName) {
+// ============================================
+// LEVEL SELECTOR
+// ============================================
+
+function initializeLevelSelector() {
+    const levelGrid = document.getElementById('levelGrid');
+    if (!levelGrid) return;
+    
+    levelGrid.innerHTML = '';
+    
+    LEVELS.forEach(level => {
+        const isUnlocked = isLevelUnlocked(level.id, appState.score);
+        const card = document.createElement('div');
+        card.className = `level-card ${!isUnlocked ? 'locked' : ''}`;
+        card.style.background = level.color;
+        
+        let html = `
+            <div class="level-emoji">${level.emoji}</div>
+            <div class="level-name">${level.name}</div>
+            <div class="level-desc">${level.description}</div>
+        `;
+        
+        if (!isUnlocked) {
+            html += `<div class="level-unlock">🔒 Cần ${level.required_score} điểm</div>`;
+        } else {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => selectLevel(level.id));
+        }
+        
+        card.innerHTML = html;
+        levelGrid.appendChild(card);
+    });
+}
+
+function selectLevel(levelId) {
+    if (!isLevelUnlocked(levelId, appState.score)) {
+        alert(`🔒 Level này chưa mở! Bạn cần ${getLevelInfo(levelId).required_score} điểm.`);
+        return;
+    }
+    
+    appState.currentLevel = levelId;
+    updateVocabulary('animals', levelId);
+    renderVocabularyCards();
+    
+    const levelName = getLevelInfo(levelId).name;
+    alert(`🎉 Bạn đã chọn: ${levelName}`);
+}
+
+function updateVocabulary(topic, level = appState.currentLevel) {
+    appState.vocabulary = getVocabularyForTopic(topic, level);
+}
     // Hide all sections
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
@@ -140,7 +194,7 @@ function setupTopicListeners() {
 function changeTopic(topic) {
     appState.currentTopic = topic;
     appState.currentVocabIndex = 0;
-    updateVocabulary(topic);
+    updateVocabulary(topic, appState.currentLevel);
     
     // Update button styles
     document.querySelectorAll('.topic-btn').forEach(btn => {
@@ -153,8 +207,8 @@ function changeTopic(topic) {
     renderVocabularyCards();
 }
 
-function updateVocabulary(topic) {
-    appState.vocabulary = getVocabularyForTopic(topic);
+function updateVocabulary(topic, level = appState.currentLevel) {
+    appState.vocabulary = getVocabularyForTopic(topic, level);
 }
 
 function renderVocabularyCards() {
@@ -622,6 +676,7 @@ function addScore(points) {
     appState.completedExercises++;
     appState.totalExercises++;
     updateScoreDisplay();
+    initializeLevelSelector(); // Update level unlock status
     saveProgress();
 }
 
@@ -650,6 +705,7 @@ function saveProgress() {
         score: appState.score,
         completedExercises: appState.completedExercises,
         totalExercises: appState.totalExercises,
+        currentLevel: appState.currentLevel,
         timestamp: new Date().toISOString(),
     };
     localStorage.setItem('englishLearningProgress', JSON.stringify(progress));
@@ -662,6 +718,7 @@ function loadProgress() {
         appState.score = progress.score || 0;
         appState.completedExercises = progress.completedExercises || 0;
         appState.totalExercises = progress.totalExercises || 0;
+        appState.currentLevel = progress.currentLevel || 2;
         updateScoreDisplay();
     }
 }

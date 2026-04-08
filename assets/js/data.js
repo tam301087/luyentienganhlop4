@@ -1,9 +1,201 @@
 /* ============================================
-   ENGLISH LEARNING LAND - DATA FILE
-   Contains all educational content
+   ENGLISH LEARNING LAND - DATA FILE v2.0
+   Contains all educational content + Level System
    ============================================ */
 
-// Vocabulary Data
+// ============================================
+// LEVEL SYSTEM
+// ============================================
+
+const LEVELS = [
+    {
+        id: 1,
+        name: 'Level 1: Dễ',
+        emoji: '⭐',
+        color: '#4caf50',
+        description: 'Bắt đầu với những từ cơ bản',
+        required_score: 0,
+    },
+    {
+        id: 2,
+        name: 'Level 2: Phổ Thông',
+        emoji: '⭐⭐',
+        color: '#ff9800',
+        description: 'Từ vựng trung cấp',
+        required_score: 100,
+    },
+    {
+        id: 3,
+        name: 'Level 3: Khó',
+        emoji: '⭐⭐⭐',
+        color: '#f44336',
+        description: 'Thách thức cao cấp',
+        required_score: 300,
+    },
+];
+
+// ============================================
+// VOCABULARY DATA - ORGANIZED BY LEVEL
+// ============================================
+
+const vocabularyDataByLevel = {
+    1: {
+        animals: [
+            { english: "Cat", vietnamese: "Mèo", emoji: "🐱" },
+            { english: "Dog", vietnamese: "Chó", emoji: "🐶" },
+            { english: "Bird", vietnamese: "Chim", emoji: "🐦" },
+            { english: "Fish", vietnamese: "Cá", emoji: "🐠" },
+        ],
+        colors: [
+            { english: "Red", vietnamese: "Đỏ", emoji: "🔴" },
+            { english: "Blue", vietnamese: "Xanh da trời", emoji: "🔵" },
+            { english: "Yellow", vietnamese: "Vàng", emoji: "🟡" },
+            { english: "Green", vietnamese: "Xanh lá cây", emoji: "🟢" },
+        ],
+        fruits: [
+            { english: "Apple", vietnamese: "Táo", emoji: "🍎" },
+            { english: "Banana", vietnamese: "Chuối", emoji: "🍌" },
+            { english: "Orange", vietnamese: "Cam", emoji: "🍊" },
+            { english: "Grape", vietnamese: "Nho", emoji: "🍇" },
+        ],
+        numbers: [
+            { english: "One", vietnamese: "Một", emoji: "1️⃣" },
+            { english: "Two", vietnamese: "Hai", emoji: "2️⃣" },
+            { english: "Three", vietnamese: "Ba", emoji: "3️⃣" },
+            { english: "Five", vietnamese: "Năm", emoji: "5️⃣" },
+        ],
+        family: [
+            { english: "Mother", vietnamese: "Mẹ", emoji: "👩" },
+            { english: "Father", vietnamese: "Bố", emoji: "👨" },
+            { english: "Sister", vietnamese: "Chị/Em gái", emoji: "👧" },
+            { english: "Brother", vietnamese: "Anh/Em trai", emoji: "👦" },
+        ],
+    },
+    2: {
+        animals: [
+            { english: "Cat", vietnamese: "Mèo", emoji: "🐱" },
+            { english: "Dog", vietnamese: "Chó", emoji: "🐶" },
+            { english: "Lion", vietnamese: "Sư tử", emoji: "🦁" },
+            { english: "Elephant", vietnamese: "Voi", emoji: "🐘" },
+            { english: "Monkey", vietnamese: "Khỉ", emoji: "🐵" },
+            { english: "Bird", vietnamese: "Chim", emoji: "🐦" },
+            { english: "Fish", vietnamese: "Cá", emoji: "🐠" },
+            { english: "Bear", vietnamese: "Gấu", emoji: "🐻" },
+        ],
+        colors: [
+            { english: "Red", vietnamese: "Đỏ", emoji: "🔴" },
+            { english: "Blue", vietnamese: "Xanh da trời", emoji: "🔵" },
+            { english: "Yellow", vietnamese: "Vàng", emoji: "🟡" },
+            { english: "Green", vietnamese: "Xanh lá cây", emoji: "🟢" },
+            { english: "Pink", vietnamese: "Hồng", emoji: "💗" },
+            { english: "Purple", vietnamese: "Tím", emoji: "🟣" },
+            { english: "Orange", vietnamese: "Cam", emoji: "🟠" },
+            { english: "Black", vietnamese: "Đen", emoji: "⚫" },
+        ],
+        fruits: [
+            { english: "Apple", vietnamese: "Táo", emoji: "🍎" },
+            { english: "Banana", vietnamese: "Chuối", emoji: "🍌" },
+            { english: "Orange", vietnamese: "Cam", emoji: "🍊" },
+            { english: "Strawberry", vietnamese: "Dâu", emoji: "🍓" },
+            { english: "Watermelon", vietnamese: "Dưa hấu", emoji: "🍉" },
+            { english: "Grape", vietnamese: "Nho", emoji: "🍇" },
+            { english: "Pineapple", vietnamese: "Dứa", emoji: "🍍" },
+            { english: "Kiwi", vietnamese: "Kiwi", emoji: "🥝" },
+        ],
+        numbers: [
+            { english: "One", vietnamese: "Một", emoji: "1️⃣" },
+            { english: "Two", vietnamese: "Hai", emoji: "2️⃣" },
+            { english: "Three", vietnamese: "Ba", emoji: "3️⃣" },
+            { english: "Four", vietnamese: "Bốn", emoji: "4️⃣" },
+            { english: "Five", vietnamese: "Năm", emoji: "5️⃣" },
+            { english: "Six", vietnamese: "Sáu", emoji: "6️⃣" },
+            { english: "Seven", vietnamese: "Bảy", emoji: "7️⃣" },
+            { english: "Eight", vietnamese: "Tám", emoji: "8️⃣" },
+        ],
+        family: [
+            { english: "Mother", vietnamese: "Mẹ", emoji: "👩" },
+            { english: "Father", vietnamese: "Bố", emoji: "👨" },
+            { english: "Sister", vietnamese: "Chị/Em gái", emoji: "👧" },
+            { english: "Brother", vietnamese: "Anh/Em trai", emoji: "👦" },
+            { english: "Grandmother", vietnamese: "Bà", emoji: "👵" },
+            { english: "Grandfather", vietnamese: "Ông", emoji: "👴" },
+            { english: "Aunt", vietnamese: "Chị/Cô", emoji: "🧑‍🦰" },
+            { english: "Uncle", vietnamese: "Chú/Anh", emoji: "👨‍🦱" },
+        ],
+    },
+    3: {
+        animals: [
+            { english: "Cat", vietnamese: "Mèo", emoji: "🐱" },
+            { english: "Dog", vietnamese: "Chó", emoji: "🐶" },
+            { english: "Lion", vietnamese: "Sư tử", emoji: "🦁" },
+            { english: "Elephant", vietnamese: "Voi", emoji: "🐘" },
+            { english: "Monkey", vietnamese: "Khỉ", emoji: "🐵" },
+            { english: "Bird", vietnamese: "Chim", emoji: "🐦" },
+            { english: "Fish", vietnamese: "Cá", emoji: "🐠" },
+            { english: "Bear", vietnamese: "Gấu", emoji: "🐻" },
+            { english: "Tiger", vietnamese: "Hổ", emoji: "🐯" },
+            { english: "Giraffe", vietnamese: "Hươu cao cổ", emoji: "🦒" },
+            { english: "Zebra", vietnamese: "Ngựa vằn", emoji: "🦓" },
+            { english: "Penguin", vietnamese: "Chim cánh cụt", emoji: "🐧" },
+        ],
+        colors: [
+            { english: "Red", vietnamese: "Đỏ", emoji: "🔴" },
+            { english: "Blue", vietnamese: "Xanh da trời", emoji: "🔵" },
+            { english: "Yellow", vietnamese: "Vàng", emoji: "🟡" },
+            { english: "Green", vietnamese: "Xanh lá cây", emoji: "🟢" },
+            { english: "Pink", vietnamese: "Hồng", emoji: "💗" },
+            { english: "Purple", vietnamese: "Tím", emoji: "🟣" },
+            { english: "Orange", vietnamese: "Cam", emoji: "🟠" },
+            { english: "Black", vietnamese: "Đen", emoji: "⚫" },
+            { english: "Brown", vietnamese: "Nâu", emoji: "🟤" },
+            { english: "Gray", vietnamese: "Xám", emoji: "⚪" },
+            { english: "White", vietnamese: "Trắng", emoji: "⚪" },
+            { english: "Silver", vietnamese: "Bạc", emoji: "✨" },
+        ],
+        fruits: [
+            { english: "Apple", vietnamese: "Táo", emoji: "🍎" },
+            { english: "Banana", vietnamese: "Chuối", emoji: "🍌" },
+            { english: "Orange", vietnamese: "Cam", emoji: "🍊" },
+            { english: "Strawberry", vietnamese: "Dâu", emoji: "🍓" },
+            { english: "Watermelon", vietnamese: "Dưa hấu", emoji: "🍉" },
+            { english: "Grape", vietnamese: "Nho", emoji: "🍇" },
+            { english: "Pineapple", vietnamese: "Dứa", emoji: "🍍" },
+            { english: "Kiwi", vietnamese: "Kiwi", emoji: "🥝" },
+            { english: "Mango", vietnamese: "Xoài", emoji: "🥭" },
+            { english: "Blueberry", vietnamese: "Việt quất", emoji: "🫐" },
+            { english: "Cherry", vietnamese: "Anh đào", emoji: "🍒" },
+            { english: "Lemon", vietnamese: "Chanh", emoji: "🍋" },
+        ],
+        numbers: [
+            { english: "One", vietnamese: "Một", emoji: "1️⃣" },
+            { english: "Two", vietnamese: "Hai", emoji: "2️⃣" },
+            { english: "Three", vietnamese: "Ba", emoji: "3️⃣" },
+            { english: "Four", vietnamese: "Bốn", emoji: "4️⃣" },
+            { english: "Five", vietnamese: "Năm", emoji: "5️⃣" },
+            { english: "Six", vietnamese: "Sáu", emoji: "6️⃣" },
+            { english: "Seven", vietnamese: "Bảy", emoji: "7️⃣" },
+            { english: "Eight", vietnamese: "Tám", emoji: "8️⃣" },
+            { english: "Nine", vietnamese: "Chín", emoji: "9️⃣" },
+            { english: "Ten", vietnamese: "Mười", emoji: "🔟" },
+            { english: "Twenty", vietnamese: "Hai mươi", emoji: "2️⃣0️⃣" },
+            { english: "Hundred", vietnamese: "Trăm", emoji: "💯" },
+        ],
+        family: [
+            { english: "Mother", vietnamese: "Mẹ", emoji: "👩" },
+            { english: "Father", vietnamese: "Bố", emoji: "👨" },
+            { english: "Sister", vietnamese: "Chị/Em gái", emoji: "👧" },
+            { english: "Brother", vietnamese: "Anh/Em trai", emoji: "👦" },
+            { english: "Grandmother", vietnamese: "Bà", emoji: "👵" },
+            { english: "Grandfather", vietnamese: "Ông", emoji: "👴" },
+            { english: "Aunt", vietnamese: "Chị/Cô", emoji: "🧑‍🦰" },
+            { english: "Uncle", vietnamese: "Chú/Anh", emoji: "👨‍🦱" },
+            { english: "Cousin", vietnamese: "Em họ", emoji: "👶" },
+            { english: "Baby", vietnamese: "Bé", emoji: "👶" },
+        ],
+    },
+};
+
+// Old format for backward compatibility
 const vocabularyData = {
     animals: [
         { english: "Cat", vietnamese: "Mèo", emoji: "🐱" },
@@ -219,9 +411,10 @@ function shuffleArray(array) {
     return newArray;
 }
 
-// Get shuffled vocabulary for a topic
-function getVocabularyForTopic(topic) {
-    return shuffleArray(vocabularyData[topic] || vocabularyData.animals);
+// Get shuffled vocabulary for a topic by level
+function getVocabularyForTopic(topic, level = 2) {
+    const data = vocabularyDataByLevel[level] || vocabularyDataByLevel[2];
+    return shuffleArray(data[topic] || data.animals);
 }
 
 // Get random listening exercise
@@ -242,4 +435,15 @@ function getRandomWritingExercise() {
 // Get shuffled memory game cards
 function getMemoryGameCards() {
     return shuffleArray(memoryGameCards);
+}
+
+// Get level info
+function getLevelInfo(levelId) {
+    return LEVELS.find(l => l.id === levelId) || LEVELS[1];
+}
+
+// Check if level is unlocked
+function isLevelUnlocked(levelId, currentScore) {
+    const level = getLevelInfo(levelId);
+    return currentScore >= level.required_score;
 }
