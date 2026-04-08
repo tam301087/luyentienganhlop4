@@ -69,18 +69,47 @@ function initializeApp() {
     // Load vocabulary for current level
     updateVocabulary(appState.currentTopic, appState.currentLevel);
     
+    // Fallback: hardcode vocabulary if empty
+    if (!appState.vocabulary || appState.vocabulary.length === 0) {
+        console.warn('Vocabulary empty after update, using hardcoded fallback');
+        appState.vocabulary = [
+            { english: "Cat", vietnamese: "Mèo", emoji: "🐱" },
+            { english: "Dog", vietnamese: "Chó", emoji: "🐶" },
+            { english: "Apple", vietnamese: "Táo", emoji: "🍎" },
+            { english: "Red", vietnamese: "Đỏ", emoji: "🔴" },
+            { english: "One", vietnamese: "Một", emoji: "1️⃣" }
+        ];
+    }
+    
     // Load other exercises
     appState.currentListeningExercise = getRandomListeningExercise();
     appState.currentReadingExercise = getRandomReadingExercise();
     appState.currentWritingExercise = getRandomWritingExercise();
     appState.memoryGameCards = getMemoryGameCards();
     
-    // Update UI
-    updateUserUI();
-    
     // Initial render
-    renderVocabularyCards();
-    renderSpeakingPractice();
+    setTimeout(() => {
+        switchSection('vocabulary'); // Ensure vocabulary section is active
+        
+        // Force show vocabulary section and main content
+        const vocabSection = document.getElementById('vocabulary');
+        if (vocabSection) {
+            vocabSection.style.display = 'block';
+            vocabSection.classList.add('active');
+        }
+        
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.style.display = 'block';
+        }
+        
+        renderVocabularyCards();
+        renderSpeakingPractice();
+        renderListeningExercise();
+        renderReadingExercise();
+        renderWritingExercise();
+        renderGames();
+    }, 500);
     updateScoreDisplay();
 }
 
@@ -166,27 +195,31 @@ function selectLevel(levelId) {
 
     appState.currentLevel = levelId;
     appState.currentVocabIndex = 0;
-    
-    // Render topic buttons for new level
-    renderTopicButtons();
-    
-    // Set default topic if current topic not available
+
     const availableTopics = getAvailableTopicsForLevel(levelId);
     if (!availableTopics.includes(appState.currentTopic)) {
-        appState.currentTopic = availableTopics[0];
+        appState.currentTopic = availableTopics[0] || 'animals';
     }
-    
+
+    // Render topic buttons and update content for the selected level
+    renderTopicButtons();
     updateVocabulary(appState.currentTopic, levelId);
     renderVocabularyCards();
     renderSpeakingPractice();
     initializeLevelSelector();
-    
+    renderListeningExercise();
+    renderReadingExercise();
+    renderWritingExercise();
+    renderGames();
+
     const levelName = getLevelInfo(levelId).name;
     alert(`🎉 Bạn đã chọn: ${levelName}`);
 }
 
 function updateVocabulary(topic, level = appState.currentLevel) {
+    console.log('updateVocabulary called with topic:', topic, 'level:', level);
     appState.vocabulary = getVocabularyForTopic(topic, level);
+    console.log('appState.vocabulary set to:', appState.vocabulary.length, 'items');
 }
 
 function switchSection(sectionName) {
@@ -253,6 +286,10 @@ function renderTopicButtons() {
     if (!topicSelector) return;
 
     const availableTopics = getAvailableTopicsForLevel(appState.currentLevel);
+    if (!availableTopics.includes(appState.currentTopic)) {
+        appState.currentTopic = availableTopics[0] || 'animals';
+    }
+
     topicSelector.innerHTML = '';
 
     availableTopics.forEach(topic => {
@@ -307,17 +344,56 @@ function changeTopic(topic) {
 
 function renderVocabularyCards() {
     const container = document.getElementById('vocabCards');
-    if (!container) return;
+    if (!container) {
+        console.error('vocabCards container not found');
+        return;
+    }
     
     container.innerHTML = '';
+    container.style.cssText = `
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        padding: 20px;
+        min-height: 200px;
+    `;
+    
+    // Debug: log current vocabulary
+    console.log('Current vocabulary:', appState.vocabulary);
+    console.log('Current topic:', appState.currentTopic);
+    console.log('Current level:', appState.currentLevel);
+    
+    if (!appState.vocabulary || appState.vocabulary.length === 0) {
+        // Fallback: hardcode some vocabulary for testing
+        console.warn('No vocabulary found, using fallback');
+        appState.vocabulary = [
+            { english: "Cat", vietnamese: "Mèo", emoji: "🐱" },
+            { english: "Dog", vietnamese: "Chó", emoji: "🐶" },
+            { english: "Apple", vietnamese: "Táo", emoji: "🍎" },
+            { english: "Red", vietnamese: "Đỏ", emoji: "🔴" },
+            { english: "One", vietnamese: "Một", emoji: "1️⃣" }
+        ];
+    }
     
     appState.vocabulary.forEach((vocab, index) => {
         const card = document.createElement('div');
         card.className = `vocab-card ${index === appState.currentVocabIndex ? 'active' : ''}`;
+        card.style.cssText = `
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 120px;
+        `;
         card.innerHTML = `
-            <div class="vocab-emoji">${vocab.emoji}</div>
-            <div class="vocab-english">${vocab.english}</div>
-            <div class="vocab-vietnamese">${vocab.vietnamese}</div>
+            <div class="vocab-emoji" style="font-size: 2em; margin-bottom: 10px;">${vocab.emoji}</div>
+            <div class="vocab-english" style="font-weight: bold; color: #333;">${vocab.english}</div>
+            <div class="vocab-vietnamese" style="color: #666; font-size: 0.9em;">${vocab.vietnamese}</div>
         `;
         
         card.addEventListener('click', () => {
@@ -328,6 +404,8 @@ function renderVocabularyCards() {
         
         container.appendChild(card);
     });
+    
+    console.log('Rendered', appState.vocabulary.length, 'vocabulary cards');
     renderSpeakingPractice();
 }
 

@@ -394,12 +394,6 @@ function getAvailableTopicsForLevel(level) {
     return topics;
 }
 
-function getVocabularyForTopic(topic, level = appState?.currentLevel || 1) {
-    const list = vocabularyMaster[topic] || vocabularyMaster.animals;
-    const count = getVocabularyCountForLevel(level);
-    return shuffleArray(list.slice(0, count));
-}
-
 function getSpeakingSentencesForLevel(level) {
     const count = Math.min(3 + level, speakingSentences.length);
     return speakingSentences.slice(0, count);
@@ -423,7 +417,7 @@ const listeningExercises = [
             { text: "🐈 Tiếng mèo kêu", correct: false },
             { text: "🦁 Tiếng sư tử gầm", correct: false },
         ],
-        audio: "Dog barking sound",
+        audio: "Woof woof! The dog is barking loudly.",
     },
     {
         question: "Đây là màu gì?",
@@ -432,7 +426,7 @@ const listeningExercises = [
             { text: "🔵 Xanh da trời (Blue)", correct: false },
             { text: "🟡 Vàng (Yellow)", correct: false },
         ],
-        audio: "Red color",
+        audio: "This color is red, like a ripe apple.",
     },
     {
         question: "Đây là trái cây gì?",
@@ -441,7 +435,34 @@ const listeningExercises = [
             { text: "🍌 Chuối (Banana)", correct: false },
             { text: "🍊 Cam (Orange)", correct: false },
         ],
-        audio: "Apple sound",
+        audio: "An apple a day keeps the doctor away.",
+    },
+    {
+        question: "Đây là số gì?",
+        options: [
+            { text: "1️⃣ Một (One)", correct: true },
+            { text: "2️⃣ Hai (Two)", correct: false },
+            { text: "3️⃣ Ba (Three)", correct: false },
+        ],
+        audio: "One is the first number we learn.",
+    },
+    {
+        question: "Đây là động vật gì?",
+        options: [
+            { text: "🐱 Mèo (Cat)", correct: true },
+            { text: "🐶 Chó (Dog)", correct: false },
+            { text: "🐭 Chuột (Mouse)", correct: false },
+        ],
+        audio: "The cat is sleeping on the mat.",
+    },
+    {
+        question: "Đây là gia đình ai?",
+        options: [
+            { text: "👨‍👩‍👧 Bố, mẹ, con gái", correct: true },
+            { text: "👨‍👩‍👦 Bố, mẹ, con trai", correct: false },
+            { text: "👨‍👩‍👧‍👦 Gia đình 4 người", correct: false },
+        ],
+        audio: "Mother, father, and daughter make a happy family.",
     },
 ];
 
@@ -542,6 +563,15 @@ const writingExercises = [
             incorrect: "Không chính xác. Hãy thử lại với con số khác.",
         },
     },
+    {
+        prompt: "Hoàn thành câu: I am ___ years old.",
+        correctAnswers: ["eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen"],
+        hint: "Trả lời: số tuổi của bạn (từ 8 đến 15)",
+        feedback: {
+            correct: "Tuyệt! Bạn đã trả lời đúng tuổi! 🎂",
+            incorrect: "Hãy thử lại với số tuổi khác.",
+        },
+    },
 ];
 
 // Memory Game Data
@@ -582,9 +612,14 @@ function getVocabularyCountForLevel(level) {
 }
 
 function getVocabularyForTopic(topic, level = appState?.currentLevel || 1) {
+    console.log('getVocabularyForTopic called with topic:', topic, 'level:', level);
     const list = vocabularyMaster[topic] || vocabularyMaster.animals;
+    console.log('List found:', list ? list.length : 'null', 'items');
     const count = getVocabularyCountForLevel(level);
-    return shuffleArray(list.slice(0, count));
+    console.log('Count:', count);
+    const result = shuffleArray(list.slice(0, count));
+    console.log('Result:', result.length, 'items');
+    return result;
 }
 
 function getSpeakingSentencesForLevel(level) {
