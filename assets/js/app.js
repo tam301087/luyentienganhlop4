@@ -21,7 +21,14 @@ const appState = {
     memoryGameMatched: new Set(),
     // User state
     currentUser: null,
-    users: JSON.parse(localStorage.getItem('englishLearningUsers') || '{}'),
+    users: (() => {
+        try {
+            return JSON.parse(localStorage.getItem('englishLearningUsers') || '{}');
+        } catch (e) {
+            console.warn('Could not load users from localStorage:', e);
+            return {};
+        }
+    })(),
     settings: {
         backgroundImage: '',
         language: 'vi'
@@ -123,16 +130,13 @@ function initializeLevelSelector() {
 }
 
 function selectLevel(levelId) {
-    console.log('Selecting level:', levelId, 'Current score:', appState.score);
     // Check if level is unlocked
     if (!isLevelUnlocked(levelId, appState.score)) {
         const requiredScore = getLevelInfo(levelId).required_score;
-        console.log('Level locked, required:', requiredScore);
         alert(`🔒 Level này cần ${requiredScore} điểm để mở khóa! Bạn hiện có ${appState.score} điểm.`);
         return;
     }
 
-    console.log('Level unlocked, proceeding');
     appState.currentLevel = levelId;
     appState.currentVocabIndex = 0;
     
@@ -218,12 +222,10 @@ function setupVocabularyListeners() {
 }
 
 function renderTopicButtons() {
-    console.log('Rendering topic buttons for level:', appState.currentLevel);
     const topicSelector = document.querySelector('.topic-selector');
     if (!topicSelector) return;
 
     const availableTopics = getAvailableTopicsForLevel(appState.currentLevel);
-    console.log('Available topics:', availableTopics);
     topicSelector.innerHTML = '';
 
     availableTopics.forEach(topic => {
@@ -823,22 +825,30 @@ function saveProgress() {
             currentLevel: appState.currentLevel,
             timestamp: new Date().toISOString(),
         };
-        localStorage.setItem('englishLearningProgress', JSON.stringify(progress));
+        try {
+            localStorage.setItem('englishLearningProgress', JSON.stringify(progress));
+        } catch (e) {
+            console.warn('Could not save progress to localStorage:', e);
+        }
     }
 }
 
 function loadProgress() {
-    const saved = localStorage.getItem('englishLearningProgress');
-    if (saved) {
-        const progress = JSON.parse(saved);
-        appState.score = progress.score || 0;
-        appState.completedExercises = progress.completedExercises || 0;
-        appState.totalExercises = progress.totalExercises || 0;
-        appState.currentLevel = progress.currentLevel || 1;
-        if (!isLevelUnlocked(appState.currentLevel, appState.score)) {
-            appState.currentLevel = 1;
+    try {
+        const saved = localStorage.getItem('englishLearningProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            appState.score = progress.score || 0;
+            appState.completedExercises = progress.completedExercises || 0;
+            appState.totalExercises = progress.totalExercises || 0;
+            appState.currentLevel = progress.currentLevel || 1;
+            if (!isLevelUnlocked(appState.currentLevel, appState.score)) {
+                appState.currentLevel = 1;
+            }
+            updateScoreDisplay();
         }
-        updateScoreDisplay();
+    } catch (e) {
+        console.warn('Could not load progress from localStorage:', e);
     }
 }
 
@@ -891,20 +901,16 @@ function setupUserListeners() {
 
 function handleLogin(e) {
     e.preventDefault();
-    console.log('Login attempt');
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    console.log('Username:', username, 'Password:', password);
 
     if (appState.users[username] && appState.users[username].password === password) {
-        console.log('Login successful');
         appState.currentUser = username;
         loadUserProgress();
         updateUserUI();
         document.getElementById('loginModal').style.display = 'none';
         alert(`Chào mừng ${username}!`);
     } else {
-        console.log('Login failed');
         alert('Tên đăng nhập hoặc mật khẩu không đúng!');
     }
 }
@@ -931,8 +937,13 @@ function handleRegister() {
         settings: { backgroundImage: '', language: 'vi' }
     };
 
-    localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
-    alert('Đăng ký thành công! Vui lòng đăng nhập.');
+    try {
+        localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
+        alert('Đăng ký thành công! Vui lòng đăng nhập.');
+    } catch (e) {
+        console.warn('Could not save users to localStorage:', e);
+        alert('Đăng ký thành công! (Dữ liệu có thể không được lưu)');
+    }
 }
 
 function handleSettingsUpdate(e) {
@@ -985,7 +996,11 @@ function saveUserProgress() {
     const user = appState.users[appState.currentUser];
     user.score = appState.score;
     user.currentLevel = appState.currentLevel;
-    localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
+    try {
+        localStorage.setItem('englishLearningUsers', JSON.stringify(appState.users));
+    } catch (e) {
+        console.warn('Could not save users to localStorage:', e);
+    }
 }
 
 function loadUserSettings() {
