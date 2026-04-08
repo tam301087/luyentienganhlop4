@@ -112,6 +112,10 @@ function selectLevel(levelId) {
     alert(`🎉 Bạn đã chọn: ${levelName}`);
 }
 
+function updateVocabulary(topic, level = appState.currentLevel) {
+    appState.vocabulary = getVocabularyForTopic(topic, level);
+}
+
 function switchSection(sectionName) {
     // Hide all sections
     document.querySelectorAll('.section').forEach(section => {
