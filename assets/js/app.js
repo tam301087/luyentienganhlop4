@@ -99,12 +99,19 @@ function setupMenuListeners() {
 // ============================================
 
 function initializeLevelSelector() {
+    console.log('Initializing level selector...');
     const levelGrid = document.getElementById('levelGrid');
-    if (!levelGrid) return;
+    console.log('levelGrid element:', levelGrid);
+    if (!levelGrid) {
+        console.error('levelGrid not found!');
+        return;
+    }
     
     levelGrid.innerHTML = '';
+    console.log('LEVELS array:', LEVELS);
     
     LEVELS.forEach(level => {
+        console.log('Creating level card for:', level.id);
         const isSelected = level.id === appState.currentLevel;
         const isUnlocked = isLevelUnlocked(level.id, appState.score);
         const card = document.createElement('div');
@@ -127,6 +134,7 @@ function initializeLevelSelector() {
         }
         levelGrid.appendChild(card);
     });
+    console.log('Level selector initialized with', LEVELS.length, 'levels');
 }
 
 function selectLevel(levelId) {
