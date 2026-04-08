@@ -42,8 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeApp() {
     console.log('🚀 Initializing English Learning Land v2.0...');
-    console.log('Current appState:', appState);
-    console.log('LEVELS available:', typeof LEVELS, LEVELS ? LEVELS.length : 'undefined');
     
     // Setup event listeners first
     setupMenuListeners();
@@ -57,7 +55,6 @@ function initializeApp() {
     
     // Load saved progress (this may change currentLevel and score)
     loadProgress();
-    console.log('After loadProgress, appState:', appState);
     
     // Initialize level selector (now with correct score)
     initializeLevelSelector();
@@ -102,46 +99,35 @@ function setupMenuListeners() {
 // ============================================
 
 function initializeLevelSelector() {
-    console.log('Initializing level selector...');
-    
-    // First, ensure the level selector section is visible
+    // Ensure the level selector section is visible
     const levelSelector = document.getElementById('levelSelector');
     if (levelSelector) {
         levelSelector.style.display = 'block';
-        console.log('Level selector section is visible');
-    } else {
-        console.error('levelSelector section not found!');
     }
     
-    const levelGrid = document.getElementById('levelGrid');
-    console.log('levelGrid element:', levelGrid);
+    let levelGrid = document.getElementById('levelGrid');
     if (!levelGrid) {
-        console.error('levelGrid not found! Creating it manually...');
-        // Try to create it manually
+        // Try to create it manually if it doesn't exist
         const selector = document.getElementById('levelSelector');
         if (selector) {
-            const grid = document.createElement('div');
-            grid.className = 'level-grid';
-            grid.id = 'levelGrid';
-            selector.appendChild(grid);
-            console.log('Created levelGrid manually');
+            levelGrid = document.createElement('div');
+            levelGrid.className = 'level-grid';
+            levelGrid.id = 'levelGrid';
+            selector.appendChild(levelGrid);
+        } else {
+            return; // Can't create level selector
         }
-        return;
     }
     
     levelGrid.innerHTML = '';
-    console.log('LEVELS array:', LEVELS);
-    console.log('LEVELS length:', LEVELS ? LEVELS.length : 'undefined');
     
     if (!LEVELS || LEVELS.length === 0) {
-        console.error('LEVELS array is empty or undefined!');
-        // Create a simple test level
-        levelGrid.innerHTML = '<div class="level-card" style="background: red; padding: 20px;">Test Level - LEVELS not loaded</div>';
+        // Fallback: create a simple test level
+        levelGrid.innerHTML = '<div class="level-card" style="background: red; padding: 20px; color: white;">⚠️ Levels not loaded - please refresh</div>';
         return;
     }
     
     LEVELS.forEach(level => {
-        console.log('Creating level card for:', level.id, level.name);
         const isSelected = level.id === appState.currentLevel;
         const isUnlocked = isLevelUnlocked(level.id, appState.score);
         const card = document.createElement('div');
@@ -164,7 +150,6 @@ function initializeLevelSelector() {
         }
         levelGrid.appendChild(card);
     });
-    console.log('Level selector initialized with', LEVELS.length, 'levels');
 }
 
 function selectLevel(levelId) {
