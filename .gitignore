@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if using)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Local development
+.env
+.env.local
+*.log
+
+# OS files
+Thumbs.db
+desktop.ini
