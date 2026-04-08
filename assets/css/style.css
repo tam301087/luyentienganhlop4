@@ -134,6 +134,12 @@ body {
     transform: none;
 }
 
+.level-card.selected-level {
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    transform: translateY(-3px);
+}
+
 .level-emoji {
     font-size: 2.5em;
     margin-bottom: 10px;
@@ -322,6 +328,33 @@ body {
     gap: 10px;
     margin-top: 20px;
     justify-content: center;
+}
+
+.speaking-practice {
+    margin-top: 25px;
+    background: #f4f7ff;
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid #dce3f2;
+}
+
+.speaking-practice h3 {
+    color: #5c6bc0;
+    margin-bottom: 15px;
+}
+
+.speaking-list {
+    display: grid;
+    gap: 10px;
+}
+
+.speaking-sentence {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 5px solid #667eea;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* ============================================

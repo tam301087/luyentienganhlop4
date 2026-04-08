@@ -6,7 +6,7 @@
 const appState = {
     currentSection: 'vocabulary',
     currentTopic: 'animals',
-    currentLevel: 2,
+    currentLevel: 1,
     currentVocabIndex: 0,
     currentListeningExercise: null,
     currentReadingExercise: null,
@@ -83,46 +83,36 @@ function initializeLevelSelector() {
     levelGrid.innerHTML = '';
     
     LEVELS.forEach(level => {
-        const isUnlocked = isLevelUnlocked(level.id, appState.score);
+        const isSelected = level.id === appState.currentLevel;
         const card = document.createElement('div');
-        card.className = `level-card ${!isUnlocked ? 'locked' : ''}`;
+        card.className = `level-card${isSelected ? ' selected-level' : ''}`;
         card.style.background = level.color;
+        card.style.cursor = 'pointer';
         
-        let html = `
+        const html = `
             <div class="level-emoji">${level.emoji}</div>
             <div class="level-name">${level.name}</div>
             <div class="level-desc">${level.description}</div>
         `;
         
-        if (!isUnlocked) {
-            html += `<div class="level-unlock">🔒 Cần ${level.required_score} điểm</div>`;
-        } else {
-            card.style.cursor = 'pointer';
-            card.addEventListener('click', () => selectLevel(level.id));
-        }
-        
         card.innerHTML = html;
+        card.addEventListener('click', () => selectLevel(level.id));
         levelGrid.appendChild(card);
     });
 }
 
 function selectLevel(levelId) {
-    if (!isLevelUnlocked(levelId, appState.score)) {
-        alert(`🔒 Level này chưa mở! Bạn cần ${getLevelInfo(levelId).required_score} điểm.`);
-        return;
-    }
-    
     appState.currentLevel = levelId;
-    updateVocabulary('animals', levelId);
+    appState.currentVocabIndex = 0;
+    updateVocabulary(appState.currentTopic, levelId);
     renderVocabularyCards();
+    initializeLevelSelector();
     
     const levelName = getLevelInfo(levelId).name;
     alert(`🎉 Bạn đã chọn: ${levelName}`);
 }
 
-function updateVocabulary(topic, level = appState.currentLevel) {
-    appState.vocabulary = getVocabularyForTopic(topic, level);
-}
+function switchSection(sectionName) {
     // Hide all sections
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
@@ -207,10 +197,6 @@ function changeTopic(topic) {
     renderVocabularyCards();
 }
 
-function updateVocabulary(topic, level = appState.currentLevel) {
-    appState.vocabulary = getVocabularyForTopic(topic, level);
-}
-
 function renderVocabularyCards() {
     const container = document.getElementById('vocabCards');
     if (!container) return;
@@ -233,6 +219,24 @@ function renderVocabularyCards() {
         });
         
         container.appendChild(card);
+    });
+    renderSpeakingPractice();
+}
+
+function renderSpeakingPractice() {
+    const speakingLevelName = document.getElementById('speakingLevelName');
+    const speakingList = document.getElementById('speakingList');
+    if (!speakingList || !speakingLevelName) return;
+
+    speakingLevelName.textContent = getLevelInfo(appState.currentLevel).name;
+    const sentences = getSpeakingSentencesForLevel(appState.currentLevel);
+    speakingList.innerHTML = '';
+
+    sentences.forEach(sentence => {
+        const item = document.createElement('div');
+        item.className = 'speaking-sentence';
+        item.textContent = sentence;
+        speakingList.appendChild(item);
     });
 }
 
@@ -718,7 +722,10 @@ function loadProgress() {
         appState.score = progress.score || 0;
         appState.completedExercises = progress.completedExercises || 0;
         appState.totalExercises = progress.totalExercises || 0;
-        appState.currentLevel = progress.currentLevel || 2;
+        appState.currentLevel = progress.currentLevel || 1;
+        if (!isLevelUnlocked(appState.currentLevel, appState.score)) {
+            appState.currentLevel = 1;
+        }
         updateScoreDisplay();
     }
 }
