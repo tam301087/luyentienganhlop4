@@ -59,14 +59,13 @@ function initializeApp() {
     setupVocabularyListeners();
     setupTopicListeners();
     setupUserListeners();
-    
-    // Update UI
-    updateUserUI();
-}
     setupListeningListeners();
     setupReadingListeners();
     setupWritingListeners();
     setupGameListeners();
+    
+    // Update UI
+    updateUserUI();
     
     // Initial render
     renderVocabularyCards();
